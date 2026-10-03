@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # MFMS
 PAP521S Project A - Municipal Financial Management System in ANSI C
 =======
@@ -76,3 +77,7 @@ The objective of Project A is to develop a functional foundation
 version of a Municipal Financial Management System using the C
 programming concepts covered in the course.
 >>>>>>> main
+=======
+# MFMS
+PAP521S Project A - Municipal Financial Management System in ANSI C
+>>>>>>> fcdd781c0cf001336c087a0d3c51ea44597e7e11

@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fcdd781c0cf001336c087a0d3c51ea44597e7e11
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -188,6 +191,7 @@ void budgetMenu(void) {
             default: printf("Invalid choice. Please try again.\n");
         }
     } while (choice != 0);
+<<<<<<< HEAD
 =======
 #include <stdio.h>
 #include <string.h>
@@ -379,4 +383,6 @@ void budgetMenu(void) {
         }
     } while (choice != 0);
 >>>>>>> main
+=======
+>>>>>>> fcdd781c0cf001336c087a0d3c51ea44597e7e11
 }

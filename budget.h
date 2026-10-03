@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> fcdd781c0cf001336c087a0d3c51ea44597e7e11
 #ifndef BUDGET_H
 #define BUDGET_H
 
@@ -21,6 +24,7 @@ void displayAllBudgets(Department budgets[], int count);
 void displayExceededBudgets(Department budgets[], int count);
 double getPositiveDouble(const char *prompt);
 
+<<<<<<< HEAD
 =======
 #ifndef BUDGET_H
 #define BUDGET_H
@@ -45,4 +49,6 @@ void displayExceededBudgets(Department budgets[], int count);
 double getPositiveDouble(const char *prompt);
 
 >>>>>>> main
+=======
+>>>>>>> fcdd781c0cf001336c087a0d3c51ea44597e7e11
 #endif
