@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include "validation.h"
 #include "suppliers.h"
+#include "assets.h"
+#include "reports.h"
+#include "employees.h"
+#include "budget.h"
 
 void displayMenu(void);
 void pauseScreen(void);
@@ -34,34 +38,30 @@ int handleMenuChoice(int choice){
     switch (choice)
     {
         case 1:
-        printf("\nEmployee Management Selected.\n");
-        pauseScreen();
-        break;
-
+        employeeMenu();
+        return 1;
+    
         case 2:
-        printf("\nBudget Management selected.\n");
-        pauseScreen();
-        break;
-
+        budgetMenu();
+        return 1;
+    
         case 3:
         displaySupplierMenu();
         return 1;
 
         case 4:
-        printf("\nAsset Management selected.\n");
-        pauseScreen();
-        break;
+        displayAssetMenu();
+        return 1;
 
         case 5:
-        printf("\nReport selected");
-        pauseScreen();
-        break;
-
+        displayReports();
+        return 1;
+    
         case 6:
         printf("\n Exiting the system...\n");
+    }
         return 0;
     }
-}
 int main(void){
 
     int choice;
