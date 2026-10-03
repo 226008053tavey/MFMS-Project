@@ -1,7 +1,7 @@
 #ifndef SUPPLIERS_H
 #define SUPPLIERS_H
 
-#define MAX_SUPPLIERS 5
+#define MAX_SUPPLIERS 100
 #define MAX_STRING_LEN 50
 
 extern int supplierIDs[MAX_SUPPLIERS];
@@ -18,4 +18,4 @@ void searchSupplierByName(void);
 void saveSuppliersToFile(void);
 void loadSuppliersFromFile(void);
 
-#endif 
+#endif

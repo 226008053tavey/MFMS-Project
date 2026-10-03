@@ -12,6 +12,9 @@ typedef struct {
     float transportAllowance;
 } Employee;
 
+extern Employee employees[MAX_EMPLOYEES];
+extern int employeeCount;
+
 void employeeMenu(void);
 void addEmployee(void);
 void displayEmployees(void);

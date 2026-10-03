@@ -14,6 +14,9 @@ typedef struct
     char condition[ASSET_TEXT_LENGTH];
 } Asset;
 
+extern Asset assets[MAX_ASSETS];
+extern int assetCount;
+
 void displayAssetMenu(void);
 
 #endif

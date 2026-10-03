@@ -1,29 +1,52 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-# MFMS
-PAP521S Project A - Municipal Financial Management System in ANSI C
-=======
 # MFMS
 
 ## PAP521S Project A - Municipal Financial Management System
 
-The Municipal Financial Management System (MFMS) is a C-based
-application developed for PAP521S Programming in Practice.
+The Municipal Financial Management System (MFMS) is a menu-driven
+application developed in ANSI C (C99) for PAP521S Programming in Practice.
 
-The system is designed to demonstrate programming concepts covered
-during Weeks 1–8 of the course.
+The system demonstrates programming concepts including variables,
+data types, input validation, decisions, loops, arrays, strings,
+functions, modular programming, and GitHub collaboration.
 
 ## System Features
 
-The system will include:
-
 - Employee Management
+  - Add employees
+  - Display employees
+  - Search employees by ID or name
+  - Calculate employee salary
+
 - Budget Management
+  - Add department budgets
+  - Record expenditure
+  - Calculate remaining budgets
+  - Display budget information
+  - Identify departments exceeding their budgets
+
 - Supplier Management
+  - Add suppliers
+  - Display suppliers
+  - Search suppliers by name
+  - Save supplier records
+  - Load supplier records
+
 - Asset Management
+  - Add assets
+  - Display assets
+  - Search assets by ID or name
+
 - Reports
-- Searching
+  - Employee salary report
+  - Budget report
+  - Supplier report
+  - Asset report
+
 - Input Validation
+  - Menu choice validation
+  - Positive numerical input validation
+  - Empty text validation
+  - Duplicate ID/department checks
 
 ## Programming Language
 
@@ -37,10 +60,18 @@ ANSI C (C99)
 
 ## Project Structure
 
-The system will be organised into separate C source and header files
-for the different modules.
+| File | Purpose |
+|---|---|
+| main.c | Main menu and system integration |
+| employees.c / employees.h | Employee management |
+| budget.c / budget.h | Budget management |
+| suppliers.c / suppliers.h | Supplier management |
+| assets.c / assets.h | Asset management |
+| reports.c / reports.h | System reports |
+| validation.c / validation.h | Input validation |
+| test_validation.c | Validation testing |
 
-## Group Members
+## Group Responsibilities
 
 | Student | Responsibility |
 |---|---|
@@ -54,30 +85,34 @@ for the different modules.
 
 ## Compilation
 
-The project can be compiled using GCC once all source files have
-been integrated.
+The complete system can be compiled using GCC:
+
+gcc -std=c99 -Wall -Wextra -pedantic main.c employees.c budget.c suppliers.c assets.c reports.c validation.c -o mfms.exe
+
+The program can then be run from the terminal.
 
 ## Testing
 
-The system will be tested for:
+The system was tested for:
 
-- Menu navigation
+- Main menu navigation
 - Employee management
+- Employee searching
+- Salary calculation
 - Budget calculations
+- Over-budget detection
+- Duplicate department prevention
 - Supplier management
+- Supplier searching
+- Supplier file saving and loading
 - Asset management
+- Asset searching
 - Reports
-- Searching
-- Invalid input
+- Invalid menu choices
 - Input validation
 
 ## Project Objective
 
 The objective of Project A is to develop a functional foundation
-version of a Municipal Financial Management System using the C
-programming concepts covered in the course.
->>>>>>> main
-=======
-# MFMS
-PAP521S Project A - Municipal Financial Management System in ANSI C
->>>>>>> fcdd781c0cf001336c087a0d3c51ea44597e7e11
+version of a Municipal Financial Management System using the
+programming concepts covered in PAP521S.
