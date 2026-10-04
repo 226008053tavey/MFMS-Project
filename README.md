@@ -11,42 +11,43 @@ functions, modular programming, and GitHub collaboration.
 
 ## System Features
 
-- Employee Management
-  - Add employees
-  - Display employees
-  - Search employees by ID or name
-  - Calculate employee salary
+* Employee Management
 
-- Budget Management
-  - Add department budgets
-  - Record expenditure
-  - Calculate remaining budgets
-  - Display budget information
-  - Identify departments exceeding their budgets
+  * Add employees
+  * Display employees
+  * Search employees by ID or name
+  * Calculate employee salary
+* Budget Management
 
-- Supplier Management
-  - Add suppliers
-  - Display suppliers
-  - Search suppliers by name
-  - Save supplier records
-  - Load supplier records
+  * Add department budgets
+  * Record expenditure
+  * Calculate remaining budgets
+  * Display budget information
+  * Identify departments exceeding their budgets
+* Supplier Management
 
-- Asset Management
-  - Add assets
-  - Display assets
-  - Search assets by ID or name
+  * Add suppliers
+  * Display suppliers
+  * Search suppliers by name
+  * Save supplier records
+  * Load supplier records
+* Asset Management
 
-- Reports
-  - Employee salary report
-  - Budget report
-  - Supplier report
-  - Asset report
+  * Add assets
+  * Display assets
+  * Search assets by ID or name
+* Reports
 
-- Input Validation
-  - Menu choice validation
-  - Positive numerical input validation
-  - Empty text validation
-  - Duplicate ID/department checks
+  * Employee salary report
+  * Budget report
+  * Supplier report
+  * Asset report
+* Input Validation
+
+  * Menu choice validation
+  * Positive numerical input validation
+  * Empty text validation
+  * Duplicate ID/department checks
 
 ## Programming Language
 
@@ -54,34 +55,34 @@ ANSI C (C99)
 
 ## Development Environment
 
-- Visual Studio Code
-- GCC
-- GitHub
+* Visual Studio Code
+* GCC
+* GitHub
 
 ## Project Structure
 
-| File | Purpose |
-|---|---|
-| main.c | Main menu and system integration |
-| employees.c / employees.h | Employee management |
-| budget.c / budget.h | Budget management |
-| suppliers.c / suppliers.h | Supplier management |
-| assets.c / assets.h | Asset management |
-| reports.c / reports.h | System reports |
-| validation.c / validation.h | Input validation |
-| test_validation.c | Validation testing |
+|File|Purpose|
+|-|-|
+|main.c|Main menu and system integration|
+|employees.c / employees.h|Employee management|
+|budget.c / budget.h|Budget management|
+|suppliers.c / suppliers.h|Supplier management|
+|assets.c / assets.h|Asset management|
+|reports.c / reports.h|System reports|
+|validation.c / validation.h|Input validation|
+|test\_validation.c|Validation testing|
 
 ## Group Responsibilities
 
-| Student | Responsibility |
-|---|---|
-| Student 1 | Employee Management |
-| Student 2 | Budget Management |
-| Student 3 | Supplier Management |
-| Student 4 | Asset Management |
-| Student 5 | Reports |
-| Student 6 | Functions, Integration and Validation |
-| Student 7 | Testing, Documentation and Git Coordination |
+|Student|Responsibility|
+|-|-|
+|Student 1|Employee Management|
+|Student 2|Budget Management|
+|Student 3|Supplier Management|
+|Student 4|Asset Management|
+|Student 5|Reports|
+|Student 6|Functions, Integration and Validation|
+|Student 7|Testing, Documentation and Git Coordination|
 
 ## Compilation
 
@@ -95,24 +96,40 @@ The program can then be run from the terminal.
 
 The system was tested for:
 
-- Main menu navigation
-- Employee management
-- Employee searching
-- Salary calculation
-- Budget calculations
-- Over-budget detection
-- Duplicate department prevention
-- Supplier management
-- Supplier searching
-- Supplier file saving and loading
-- Asset management
-- Asset searching
-- Reports
-- Invalid menu choices
-- Input validation
+* Main menu navigation
+* Employee management
+* Employee searching
+* Salary calculation
+* Budget calculations
+* Over-budget detection
+* Duplicate department prevention
+* Supplier management
+* Supplier searching
+* Supplier file saving and loading
+* Asset management
+* Asset searching
+* Reports
+* Invalid menu choices
+* Input validation
 
 ## Project Objective
 
 The objective of Project A is to develop a functional foundation
 version of a Municipal Financial Management System using the
 programming concepts covered in PAP521S.
+## Project Features
+
+
+
+\- Employee management
+
+\- Asset management
+
+\- Supplier management
+
+\- Budget management
+
+\- Reports generation
+
+\- Input validation
+
