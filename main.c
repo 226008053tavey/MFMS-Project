@@ -2,7 +2,6 @@
 #include "validation.h"
 #include "suppliers.h"
 #include "assets.h"
-#include "reports.h"
 #include "employees.h"
 #include "budget.h"
 
@@ -22,7 +21,6 @@ void displayMenu(void){
     printf("2. Budget Management\n");
     printf("3. Supplier Management\n");
     printf("4. Asset Management\n");
-    printf("5. Reports\n");
     printf("6. Exit\n");
 
     printf("======================================\n");
@@ -54,7 +52,6 @@ int handleMenuChoice(int choice){
         return 1;
 
         case 5:
-        displayReports();
         return 1;
     
         case 6:
