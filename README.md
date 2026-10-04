@@ -133,3 +133,17 @@ programming concepts covered in PAP521S.
 
 \- Input validation
 
+## Group Members and Responsibilities
+
+| Student   | Name                 | Student Number | Responsibility                            |
+| --------- | -------------------- | -------------- | ----------------------------------------- |
+| Student 1 | Fiindje Mate         | 223083593      | Employee Management                       |
+| Student 2 | Abigail Da Cunha     | 226074943      | Budget Management                         |
+| Student 3 | Enerist Shilumbu     | 222093951      | Supplier Management                       |
+| Student 4 | Kayoko Mangulukeni N | 226074404      | Asset Management                          |
+| Student 5 | Siteketa Martin      | 225030969      | Reports                                   |
+| Student 6 | Dipundhi Paul Peter  | 225058146      | Functions, Integration & Validation       |
+| Student 7 | Tavey Ngenokesho     | 226008053      | Testing, Documentation & Git Coordination |
+
+
+
