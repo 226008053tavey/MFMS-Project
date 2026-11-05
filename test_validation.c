@@ -26,12 +26,13 @@ int main(void){
     printf("\nTesting string validation\n");
     printf("Enter a name: ");
 
-    getValidString(name, 50);
+    if (getValidString(name, 50) == 1){
 
     printf("Accepted name: %s\n", name);
-
-    while (getchar() != '\n'){
-        
+    }
+    else
+    {
+        printf("Input failed.\n");  
     }
 
     return 0;

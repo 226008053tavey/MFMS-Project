@@ -27,10 +27,16 @@ void displayMenu(void){
 
     printf("======================================\n");
 }
-void pauseScreen(void){
+void pauseScreen(void)
+{
+    int ch;
 
     printf("\nPress Enter to continue...");
-    getchar();
+
+    while ((ch = getchar()) != '\n' && ch != EOF)
+    {
+    }
+
     getchar();
 }
 

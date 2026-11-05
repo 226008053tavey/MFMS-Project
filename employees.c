@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "employees.h"
+#include "validation.h"
 
 Employee employees[MAX_EMPLOYEES];
 int employeeCount = 0;
@@ -15,62 +16,36 @@ void addEmployee(void)
     printf("\n===== ADD EMPLOYEE =====\n");
 
     printf("Enter Employee ID: ");
-    scanf("%d", &employees[employeeCount].id);
+    employees[employeeCount].id = getValidPositiveInt();
 
-    getchar();
+    printf("Enter Employee Name: ");
 
-    do {
-        printf("Enter Employee Name: ");
-        fgets(employees[employeeCount].name,
-              sizeof(employees[employeeCount].name), stdin);
+if (!getValidString(employees[employeeCount].name,
+                    sizeof(employees[employeeCount].name)))
+{
+    printf("Unable to read employee name.\n");
+    return;
+}
+printf("Enter Department: ");
 
-        employees[employeeCount].name[
-            strcspn(employees[employeeCount].name, "\n")
-        ] = '\0';
+if (!getValidString(employees[employeeCount].department,
+                    sizeof(employees[employeeCount].department)))
+{
+    printf("Unable to read department.\n");
+    return;
+}
 
-        if (strlen(employees[employeeCount].name) == 0) {
-            printf("Employee name cannot be empty. Please try again.\n");
-        }
+    printf("Enter Basic Salary: ");
+employees[employeeCount].basicSalary =
+    (float)getValidPositiveDouble();
 
-    } while (strlen(employees[employeeCount].name) == 0);
+    printf("Enter Housing Allowance: ");
+employees[employeeCount].housingAllowance =
+    (float)getValidPositiveDouble();
 
-    printf("Enter Department: ");
-    fgets(employees[employeeCount].department,
-          sizeof(employees[employeeCount].department), stdin);
-
-    employees[employeeCount].department[
-        strcspn(employees[employeeCount].department, "\n")
-    ] = '\0';
-
-    do {
-        printf("Enter Basic Salary: ");
-        scanf("%f", &employees[employeeCount].basicSalary);
-
-        if (employees[employeeCount].basicSalary < 0) {
-            printf("Basic salary cannot be negative. Please try again.\n");
-        }
-
-    } while (employees[employeeCount].basicSalary < 0);
-
-    do {
-        printf("Enter Housing Allowance: ");
-        scanf("%f", &employees[employeeCount].housingAllowance);
-
-        if (employees[employeeCount].housingAllowance < 0) {
-            printf("Housing allowance cannot be negative. Please try again.\n");
-        }
-
-    } while (employees[employeeCount].housingAllowance < 0);
-
-    do {
-        printf("Enter Transport Allowance: ");
-        scanf("%f", &employees[employeeCount].transportAllowance);
-
-        if (employees[employeeCount].transportAllowance < 0) {
-            printf("Transport allowance cannot be negative. Please try again.\n");
-        }
-
-    } while (employees[employeeCount].transportAllowance < 0);
+    printf("Enter Transport Allowance: ");
+employees[employeeCount].transportAllowance =
+    (float)getValidPositiveDouble();
 
     employeeCount++;
 
@@ -114,15 +89,12 @@ void searchEmployee(void)
     printf("1. Search by Employee ID\n");
     printf("2. Search by Employee Name\n");
     printf("Enter your choice: ");
-    scanf("%d", &choice);
-
-    getchar();
+    choice = getValidMenuChoice(1, 2);
 
     if (choice == 1) {
 
         printf("Enter Employee ID: ");
-        scanf("%d", &id);
-
+        id = getValidPositiveInt();
         for (i = 0; i < employeeCount; i++) {
 
             if (employees[i].id == id) {
@@ -147,10 +119,12 @@ void searchEmployee(void)
     } else if (choice == 2) {
 
         printf("Enter Employee Name: ");
-        fgets(name, sizeof(name), stdin);
 
-        name[strcspn(name, "\n")] = '\0';
-
+if (!getValidString(name, sizeof(name)))
+{
+    printf("Unable to read employee name.\n");
+    return;
+}
         for (i = 0; i < employeeCount; i++) {
 
             if (strcmp(employees[i].name, name) == 0) {
@@ -188,7 +162,7 @@ void calculateSalary(void)
     printf("\n===== CALCULATE SALARY =====\n");
 
     printf("Enter Employee ID: ");
-    scanf("%d", &id);
+    id = getValidPositiveInt();
 
     for (i = 0; i < employeeCount; i++) {
 
@@ -228,7 +202,7 @@ void employeeMenu(void)
         printf("5. Return to Main Menu\n");
         printf("Enter your choice: ");
 
-        scanf("%d", &choice);
+        choice = getValidMenuChoice(1, 5);
 
         switch (choice) {
 

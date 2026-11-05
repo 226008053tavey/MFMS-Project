@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "suppliers.h"
+#include "validation.h"
 
 int supplierIDs[MAX_SUPPLIERS];
 char supplierNames[MAX_SUPPLIERS][MAX_STRING_LEN];
@@ -23,15 +24,8 @@ void displaySupplierMenu(void)
         printf("4. Save Supplier Database to File\n");
         printf("5. Load Supplier Database from File\n");
         printf("6. Return to Main Menu\n");
-        printf("Enter choice: ");
         
-        if (scanf("%d", &choice) != 1) 
-        {
-            printf("Invalid selection! Input must be a valid number.\n");
-            while (getchar() != '\n'); 
-            continue;
-        }
-        while (getchar() != '\n'); 
+        choice = getValidMenuChoice(1, 6);
 
         switch (choice) 
         {
@@ -46,50 +40,51 @@ void displaySupplierMenu(void)
     } while (choice != 6);
 }
 
-void addSupplier(void) 
+void addSupplier(void)
 {
-    if (supplierCount >= MAX_SUPPLIERS) 
+    if (supplierCount >= MAX_SUPPLIERS)
     {
         printf("Database full! Maximum capacity reached.\n");
         return;
     }
 
     printf("\n--- Add New Supplier Details ---\n");
+
     printf("Enter Supplier ID (Positive Integer): ");
-    if (scanf("%d", &supplierIDs[supplierCount]) != 1 || supplierIDs[supplierCount] <= 0) 
-    {
-        printf("Invalid ID configuration! Must be a positive integer number.\n");
-        while (getchar() != '\n');
-        return;
-    }
-    while (getchar() != '\n'); 
+    supplierIDs[supplierCount] = getValidPositiveInt();
 
     printf("Enter Supplier Name: ");
-    fgets(supplierNames[supplierCount], MAX_STRING_LEN, stdin);
-    supplierNames[supplierCount][strcspn(supplierNames[supplierCount], "\n")] = '\0'; 
-
-    if (strlen(supplierNames[supplierCount]) == 0) 
+    if (!getValidString(supplierNames[supplierCount], MAX_STRING_LEN))
     {
-        printf("Validation Error: Supplier name field cannot be blank.\n");
+        printf("Unable to read supplier name.\n");
         return;
     }
 
     printf("Enter Email Address: ");
-    fgets(supplierEmails[supplierCount], MAX_STRING_LEN, stdin);
-    supplierEmails[supplierCount][strcspn(supplierEmails[supplierCount], "\n")] = '\0';
+    if (!getValidString(supplierEmails[supplierCount], MAX_STRING_LEN))
+    {
+        printf("Unable to read supplier email.\n");
+        return;
+    }
 
     printf("Enter Phone Number: ");
-    fgets(supplierPhones[supplierCount], MAX_STRING_LEN, stdin);
-    supplierPhones[supplierCount][strcspn(supplierPhones[supplierCount], "\n")] = '\0';
+    if (!getValidString(supplierPhones[supplierCount], MAX_STRING_LEN))
+    {
+        printf("Unable to read supplier phone number.\n");
+        return;
+    }
 
     printf("Enter Town Location: ");
-    fgets(supplierTowns[supplierCount], MAX_STRING_LEN, stdin);
-    supplierTowns[supplierCount][strcspn(supplierTowns[supplierCount], "\n")] = '\0';
+    if (!getValidString(supplierTowns[supplierCount], MAX_STRING_LEN))
+    {
+        printf("Unable to read supplier town.\n");
+        return;
+    }
 
     supplierCount++;
+
     printf("Supplier entry successfully logged into local memory buffer!\n");
 }
-
 void displayAllSuppliers(void) 
 {
     if (supplierCount == 0) 
@@ -109,35 +104,45 @@ void displayAllSuppliers(void)
     printf("=================================================================================\n");
 }
 
-void searchSupplierByName(void) 
+void searchSupplierByName(void)
 {
-    if (supplierCount == 0) 
+    if (supplierCount == 0)
     {
-        printf("\nNo active supplier data maps loaded in system runtime arrays.\n");
+        printf("\nNo suppliers registered. Please add or load suppliers first.\n");
         return;
     }
 
     char searchTarget[MAX_STRING_LEN];
+
     printf("\nEnter full Supplier Name to search: ");
-    fgets(searchTarget, MAX_STRING_LEN, stdin);
-    searchTarget[strcspn(searchTarget, "\n")] = '\0'; 
+
+    if (!getValidString(searchTarget, MAX_STRING_LEN))
+    {
+        printf("Unable to read supplier name.\n");
+        return;
+    }
 
     int found = 0;
-    for (int i = 0; i < supplierCount; i++) 
+
+    for (int i = 0; i < supplierCount; i++)
     {
-        if (strcmp(supplierNames[i], searchTarget) == 0) 
+        if (strcmp(supplierNames[i], searchTarget) == 0)
         {
-            printf("\nSupplier Found! Displaying information records:\n");
-            printf("ID      : %d\nName    : %s\nEmail   : %s\nPhone   : %s\nTown    : %s\n",
-                   supplierIDs[i], supplierNames[i], supplierEmails[i], supplierPhones[i], supplierTowns[i]);
+            printf("\nSupplier Found!\n");
+            printf("ID    : %d\n", supplierIDs[i]);
+            printf("Name  : %s\n", supplierNames[i]);
+            printf("Email : %s\n", supplierEmails[i]);
+            printf("Phone : %s\n", supplierPhones[i]);
+            printf("Town  : %s\n", supplierTowns[i]);
+
             found = 1;
-            break; 
+            break;
         }
     }
 
-    if (!found) 
+    if (!found)
     {
-        printf("Search unconfirmed. Supplier name '%s' does not exist.\n", searchTarget);
+        printf("Supplier '%s' does not exist.\n", searchTarget);
     }
 }
 
@@ -160,12 +165,13 @@ void saveSuppliersToFile(void)
     printf("System Notification: Successfully saved %d supplier records persistently!\n", supplierCount);
 }
 
-void loadSuppliersFromFile(void) 
+void loadSuppliersFromFile(void)
 {
     FILE *filePointer = fopen("suppliers.txt", "r");
-    if (filePointer == NULL) 
+
+    if (filePointer == NULL)
     {
-        printf("Notice: Persistence storage file 'suppliers.txt' not found. Starting fresh.\n");
+        printf("Notice: Supplier file 'suppliers.txt' not found.\n");
         return;
     }
 
@@ -174,25 +180,36 @@ void loadSuppliersFromFile(void)
     char tempEmail[MAX_STRING_LEN];
     char tempPhone[MAX_STRING_LEN];
     char tempTown[MAX_STRING_LEN];
+
     int loadedRecordsCount = 0;
 
-    while (fscanf(filePointer, "%d|%49[^|]|%49[^|]|%49[^|]|%49[^\n]\n",
-                  &tempID, tempName, tempEmail, tempPhone, tempTown) == 5) 
+    while (loadedRecordsCount < MAX_SUPPLIERS &&
+           fscanf(filePointer,
+                  "%d|%49[^|]|%49[^|]|%49[^|]|%49[^\n]\n",
+                  &tempID,
+                  tempName,
+                  tempEmail,
+                  tempPhone,
+                  tempTown) == 5)
     {
-        if (loadedRecordsCount >= MAX_SUPPLIERS) 
+        if (tempID <= 0)
         {
-            break;
+            continue;
         }
 
         supplierIDs[loadedRecordsCount] = tempID;
+
         strcpy(supplierNames[loadedRecordsCount], tempName);
         strcpy(supplierEmails[loadedRecordsCount], tempEmail);
         strcpy(supplierPhones[loadedRecordsCount], tempPhone);
         strcpy(supplierTowns[loadedRecordsCount], tempTown);
+
         loadedRecordsCount++;
     }
 
     fclose(filePointer);
-    supplierCount = loadedRecordsCount; 
-    printf("System Notification: Successfully loaded %d records into active memory structures!\n", supplierCount);
+
+    supplierCount = loadedRecordsCount;
+
+    printf("Successfully loaded %d supplier records.\n", supplierCount);
 }
