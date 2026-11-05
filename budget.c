@@ -2,65 +2,13 @@
 #include <string.h>
 #include <ctype.h>
 #include "budget.h"
+#include "validation.h"
 
+/* Shared budget data */
 Department budgets[MAX_DEPARTMENTS];
 int budgetCount = 0;
 
-double getPositiveDouble(const char *prompt)
-{
-    double value;
-    char line[100];
-    char extra;
-
-    while (1)
-    {
-        printf("%s", prompt);
-
-        if (fgets(line, sizeof(line), stdin) == NULL)
-        {
-            continue;
-        }
-
-        if (sscanf(line, "%lf %c", &value, &extra) != 1)
-        {
-            printf("Invalid number. Try again.\n");
-            continue;
-        }
-
-        if (value < 0)
-        {
-            printf("Value cannot be negative. Try again.\n");
-            continue;
-        }
-
-        return value;
-    }
-}
-
-static void getNonEmptyString(const char *prompt, char *out, int size)
-{
-    while (1)
-    {
-        printf("%s", prompt);
-
-        if (fgets(out, size, stdin) == NULL)
-        {
-            continue;
-        }
-
-        out[strcspn(out, "\n")] = '\0';
-
-        if (strlen(out) == 0)
-        {
-            printf("Input cannot be empty. Try again.\n");
-            continue;
-        }
-
-        return;
-    }
-}
-
-/* ANSI C99 case-insensitive string comparison */
+/* Case-insensitive string comparison */
 static int stringsEqualIgnoreCase(const char *first, const char *second)
 {
     while (*first != '\0' && *second != '\0')
@@ -78,6 +26,7 @@ static int stringsEqualIgnoreCase(const char *first, const char *second)
     return *first == '\0' && *second == '\0';
 }
 
+/* Check whether a department already exists */
 static int departmentExists(Department budgetList[],
                             int count,
                             const char *name)
@@ -95,6 +44,7 @@ static int departmentExists(Department budgetList[],
     return -1;
 }
 
+/* Add a department budget */
 int addDepartmentBudget(Department budgetList[], int count)
 {
     char name[NAME_LEN];
@@ -106,19 +56,52 @@ int addDepartmentBudget(Department budgetList[], int count)
         return count;
     }
 
-    getNonEmptyString("Enter department name: ", name, NAME_LEN);
-
-    if (departmentExists(budgetList, count, name) != -1)
+    while (1)
     {
-        printf("Department '%s' already exists.\n", name);
-        return count;
+       printf("Enter department name (Q to cancel): ");
+
+if (!getValidString(name, NAME_LEN))
+{
+    printf("Invalid input. Please try again.\n");
+    continue;
+}
+
+if (strcmp(name, "Q") == 0 || strcmp(name, "q") == 0)
+{
+    printf("Adding department cancelled.\n");
+    return count;
+}
+
+        if (!getValidString(name, NAME_LEN))
+        {
+            printf("Invalid input. Please try again.\n");
+            continue;
+        }
+
+        if (strcmp(name, "-1") == 0)
+        {
+            printf("Error: -1 is not a valid department name. Please try again.\n");
+            continue;
+        }
+
+        if (departmentExists(budgetList, count, name) != -1)
+        {
+            printf("Department '%s' already exists. Please try again.\n", name);
+            continue;
+        }
+
+        break;
     }
 
     strcpy(budgetList[count].department, name);
 
-    budgetList[count].allocatedBudget =
-        getPositiveDouble("Enter allocated budget (N$): ");
+    printf("Enter allocated budget (N$) or Q to cancel: ");
 
+if (!getValidPositiveDoubleOrCancel(&budgetList[count].allocatedBudget))
+{
+    printf("Adding department cancelled.\n");
+    return count;
+}
     budgetList[count].expenditure = 0.0;
 
     printf("Budget for '%s' added successfully.\n", name);
@@ -126,6 +109,7 @@ int addDepartmentBudget(Department budgetList[], int count)
     return count + 1;
 }
 
+/* Enter expenditure for an existing department */
 void enterExpenditure(Department budgetList[], int count)
 {
     char name[NAME_LEN];
@@ -138,7 +122,13 @@ void enterExpenditure(Department budgetList[], int count)
         return;
     }
 
-    getNonEmptyString("Enter department name: ", name, NAME_LEN);
+    printf("Enter department name: ");
+
+    if (!getValidString(name, NAME_LEN))
+    {
+        printf("Unable to read department name.\n");
+        return;
+    }
 
     index = departmentExists(budgetList, count, name);
 
@@ -148,7 +138,8 @@ void enterExpenditure(Department budgetList[], int count)
         return;
     }
 
-    amount = getPositiveDouble("Enter expenditure amount (N$): ");
+    printf("Enter expenditure amount (N$): ");
+    amount = getValidPositiveDouble();
 
     budgetList[index].expenditure += amount;
 
@@ -164,6 +155,7 @@ void enterExpenditure(Department budgetList[], int count)
     }
 }
 
+/* Calculate remaining budget */
 void calculateRemainingBudget(Department budgetList[], int count)
 {
     int i;
@@ -203,6 +195,7 @@ void calculateRemainingBudget(Department budgetList[], int count)
     printf("=========================================================\n");
 }
 
+/* Display all department budgets */
 void displayAllBudgets(Department budgetList[], int count)
 {
     int i;
@@ -239,6 +232,7 @@ void displayAllBudgets(Department budgetList[], int count)
     }
 }
 
+/* Display departments that have exceeded their budgets */
 void displayExceededBudgets(Department budgetList[], int count)
 {
     int i;
@@ -269,6 +263,7 @@ void displayExceededBudgets(Department budgetList[], int count)
     }
 }
 
+/* Budget management menu */
 void budgetMenu(void)
 {
     int choice;
@@ -283,23 +278,7 @@ void budgetMenu(void)
         printf("5. Show Departments Exceeding Budget\n");
         printf("0. Back to Main Menu\n");
 
-        printf("Enter your choice: ");
-
-        if (scanf("%d", &choice) != 1)
-        {
-            printf("Invalid menu choice. Enter a number from 0 to 5.\n");
-
-            while (getchar() != '\n')
-            {
-            }
-
-            choice = -1;
-            continue;
-        }
-
-        while (getchar() != '\n')
-        {
-        }
+        choice = getValidMenuChoice(0, 5);
 
         switch (choice)
         {
@@ -327,9 +306,6 @@ void budgetMenu(void)
             case 0:
                 printf("Returning to main menu...\n");
                 break;
-
-            default:
-                printf("Invalid choice. Please try again.\n");
         }
 
     } while (choice != 0);

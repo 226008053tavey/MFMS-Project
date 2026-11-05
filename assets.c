@@ -1,139 +1,11 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include <limits.h>
-#include <math.h>
 #include "assets.h"
+#include "validation.h"
 
 /* Array used to store the registered assets. */
 Asset assets[MAX_ASSETS];
 int assetCount = 0;
-
-/* Reads one line of text and discards extra characters beyond the buffer. */
-static void readLine(const char *prompt, char text[], size_t capacity)
-{
-    size_t length;
-    int character;
-
-    printf("%s", prompt);
-
-    if (fgets(text, (int)capacity, stdin) == NULL)
-    {
-        text[0] = '\0';
-        return;
-    }
-
-    length = strlen(text);
-
-    if (length > 0 && text[length - 1] == '\n')
-    {
-        text[length - 1] = '\0';
-    }
-    else
-    {
-        while ((character = getchar()) != '\n' && character != EOF)
-        {
-        }
-    }
-}
-
-static int isBlank(const char text[])
-{
-    size_t i;
-
-    for (i = 0; text[i] != '\0'; i++)
-    {
-        if (!isspace((unsigned char)text[i]))
-        {
-            return 0;
-        }
-    }
-
-    return 1;
-}
-
-/* Reads an integer between minimum and maximum, inclusive. */
-static int readInteger(const char *prompt,
-                       int minimum,
-                       int maximum,
-                       int *value)
-{
-    char input[ASSET_TEXT_LENGTH];
-    char *end;
-    long parsed;
-
-    readLine(prompt, input, sizeof(input));
-
-    errno = 0;
-    parsed = strtol(input, &end, 10);
-
-    while (isspace((unsigned char)*end))
-    {
-        end++;
-    }
-
-    if (isBlank(input) ||
-        *end != '\0' ||
-        errno != 0 ||
-        parsed < minimum ||
-        parsed > maximum)
-    {
-        return 0;
-    }
-
-    *value = (int)parsed;
-
-    return 1;
-}
-
-/* Reads a valid non-negative purchase value. */
-static int readPurchaseValue(double *value)
-{
-    char input[ASSET_TEXT_LENGTH];
-    char *end;
-    double parsed;
-
-    readLine("Purchase value (N$): ", input, sizeof(input));
-
-    errno = 0;
-    parsed = strtod(input, &end);
-
-    while (isspace((unsigned char)*end))
-    {
-        end++;
-    }
-
-    if (isBlank(input) ||
-        *end != '\0' ||
-        errno != 0 ||
-        !isfinite(parsed) ||
-        parsed < 0.0)
-    {
-        return 0;
-    }
-
-    *value = parsed;
-
-    return 1;
-}
-
-static void readRequiredText(const char *prompt,
-                             char text[],
-                             size_t capacity)
-{
-    do
-    {
-        readLine(prompt, text, capacity);
-
-        if (isBlank(text))
-        {
-            puts("This field cannot be empty. Please try again.");
-        }
-
-    } while (isBlank(text));
-}
 
 static int findAssetById(int id)
 {
@@ -162,17 +34,20 @@ static void addAsset(void)
     }
 
     puts("\n--- Add Asset ---");
+    puts("Enter Q at any prompt to cancel asset registration.");
 
+    /* Asset ID */
     for (;;)
     {
-        if (!readInteger("Asset ID (positive whole number): ",
-                         1,
-                         INT_MAX,
-                         &newAsset.id))
+        printf("Asset ID (positive whole number): ");
+
+        if (!getValidPositiveIntOrCancel(&newAsset.id))
         {
-            puts("Enter a valid positive whole number for the asset ID.");
+            puts("Asset registration cancelled.");
+            return;
         }
-        else if (findAssetById(newAsset.id) >= 0)
+
+        if (findAssetById(newAsset.id) >= 0)
         {
             puts("That asset ID is already registered. Choose a different ID.");
         }
@@ -182,33 +57,72 @@ static void addAsset(void)
         }
     }
 
-    readRequiredText("Asset name: ",
-                     newAsset.name,
-                     sizeof(newAsset.name));
+    /* Asset name */
+    printf("Asset name: ");
 
-    readRequiredText("Asset type (for example, Vehicle or Computer): ",
-                     newAsset.type,
-                     sizeof(newAsset.type));
+    if (!getValidString(newAsset.name, sizeof(newAsset.name)))
+        return;
 
-    while (!readPurchaseValue(&newAsset.purchaseValue))
+    if (strcmp(newAsset.name, "Q") == 0 ||
+        strcmp(newAsset.name, "q") == 0)
     {
-        puts("Enter a valid purchase value of zero or more.");
+        puts("Asset registration cancelled.");
+        return;
     }
 
-    readRequiredText("Department: ",
-                     newAsset.department,
-                     sizeof(newAsset.department));
+    /* Asset type */
+    printf("Asset type (for example, Vehicle or Computer): ");
 
-    readRequiredText("Condition (for example, Good or Needs repair): ",
-                     newAsset.condition,
-                     sizeof(newAsset.condition));
+    if (!getValidString(newAsset.type, sizeof(newAsset.type)))
+        return;
+
+    if (strcmp(newAsset.type, "Q") == 0 ||
+        strcmp(newAsset.type, "q") == 0)
+    {
+        puts("Asset registration cancelled.");
+        return;
+    }
+
+    /* Purchase value */
+    printf("Purchase value (N$): ");
+
+    if (!getValidPositiveDoubleOrCancel(&newAsset.purchaseValue))
+    {
+        puts("Asset registration cancelled.");
+        return;
+    }
+
+    /* Department */
+    printf("Department: ");
+
+    if (!getValidString(newAsset.department, sizeof(newAsset.department)))
+        return;
+
+    if (strcmp(newAsset.department, "Q") == 0 ||
+        strcmp(newAsset.department, "q") == 0)
+    {
+        puts("Asset registration cancelled.");
+        return;
+    }
+
+    /* Condition */
+    printf("Condition (for example, Good or Needs repair): ");
+
+    if (!getValidString(newAsset.condition, sizeof(newAsset.condition)))
+        return;
+
+    if (strcmp(newAsset.condition, "Q") == 0 ||
+        strcmp(newAsset.condition, "q") == 0)
+    {
+        puts("Asset registration cancelled.");
+        return;
+    }
 
     assets[assetCount] = newAsset;
     assetCount++;
 
     puts("Asset added successfully.");
 }
-
 static void displayAsset(const Asset *asset)
 {
     printf("Asset ID:       %d\n", asset->id);
@@ -257,22 +171,12 @@ static void searchAsset(void)
     puts("1. Asset ID");
     puts("2. Exact asset name");
 
-    if (!readInteger("Enter your choice: ", 1, 2, &choice))
-    {
-        puts("Invalid search choice.");
-        return;
-    }
+printf("Enter your choice: ");
+choice = getValidMenuChoice(1, 2);
 
-    if (choice == 1)
-    {
-        if (!readInteger("Enter asset ID: ",
-                         1,
-                         INT_MAX,
-                         &id))
-        {
-            puts("Invalid asset ID.");
-            return;
-        }
+if (choice == 1){
+    printf("Enter asset ID: ");
+    id = getValidPositiveInt();
 
         index = findAssetById(id);
 
@@ -288,9 +192,8 @@ static void searchAsset(void)
     }
     else
     {
-        readRequiredText("Enter the exact asset name: ",
-                         name,
-                         sizeof(name));
+        printf("Enter the exact asset name: ");
+getValidString(name, sizeof(name));
 
         for (i = 0; i < assetCount; i++)
         {
@@ -323,15 +226,7 @@ void displayAssetMenu(void)
         puts("3. Search for an asset");
         puts("4. Exit");
 
-        if (!readInteger("Enter your choice: ",
-                         1,
-                         4,
-                         &choice))
-        {
-            puts("Invalid menu choice. Enter a number from 1 to 4.");
-            choice = 0;
-            continue;
-        }
+        choice = getValidMenuChoice(1, 4);
 
         switch (choice)
         {

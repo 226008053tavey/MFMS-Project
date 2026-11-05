@@ -34,6 +34,8 @@ const char *const EMP_DEPARTMENTS[NUM_DEPARTMENTS] = {
 /* ---------- Module data ---------- */
 static Employee employees[MAX_EMPLOYEES];
 static int      employeeCount = 0;
+static int registrationInput = 0;
+static int registrationCancelled = 0;
 
 /* =====================================================================
  *  Input helpers (all validation lives here so every prompt is safe)
@@ -76,6 +78,12 @@ static void readLine(const char *prompt, char *buf, int size)
         }
     }
     trim(buf);
+
+    if (registrationInput &&
+    (strcmp(buf, "Q") == 0 || strcmp(buf, "q") == 0))
+{
+    registrationCancelled = 1;
+}
 }
 
 static int readInt(const char *prompt, int min, int max)
@@ -86,6 +94,8 @@ static int readInt(const char *prompt, int min, int max)
 
     for (;;) {
         readLine(prompt, buf, sizeof buf);
+        if (registrationCancelled)
+    return -1;
         if (buf[0] == '\0') {
             printf("  Error: input cannot be empty.\n");
             continue;
@@ -112,6 +122,8 @@ static double readMoney(const char *prompt, int allowZero)
 
     for (;;) {
         readLine(prompt, buf, sizeof buf);
+        if (registrationCancelled)
+    return -1.0;
         if (buf[0] == '\0') {
             printf("  Error: input cannot be empty.\n");
             continue;
@@ -326,7 +338,18 @@ double calculateNetSalary(const Employee *emp)
 /* =====================================================================
  *  Operations
  * ===================================================================== */
+static int cancelEmployeeRegistration(void)
+{
+    if (!registrationCancelled)
+        return 0;
 
+    registrationInput = 0;
+    registrationCancelled = 0;
+
+    printf("\nEmployee registration cancelled. Returning to Employee Management menu.\n");
+
+    return 1;
+}
 void addEmployee(void)
 {
     Employee emp;
@@ -338,11 +361,18 @@ void addEmployee(void)
         printf("Error: employee list is full (%d maximum).\n", MAX_EMPLOYEES);
         return;
     }
+registrationInput = 1;
+registrationCancelled = 0;
 
+printf("Enter Q at any registration prompt to cancel.\n");
     /* Employee ID: 3-9 letters/digits, must be unique */
     for (;;) {
-        readLine("Employee ID (e.g. EMP001): ", buf, sizeof buf);
-        toUpperStr(buf);
+    readLine("Employee ID (e.g. EMP001): ", buf, sizeof buf);
+
+    if (cancelEmployeeRegistration())
+        return;
+
+    toUpperStr(buf);
         if (!isValidId(buf)) {
             printf("  Error: ID must be 3-%d letters/digits, no spaces.\n",
                    MAX_ID_LEN - 1);
@@ -356,7 +386,11 @@ void addEmployee(void)
 
     /* Name */
     for (;;) {
-        readLine("Full name: ", buf, sizeof buf);
+       readLine("Full name: ", buf, sizeof buf);
+
+if (cancelEmployeeRegistration())
+    return;
+
         if (strlen(buf) == 0) {
             printf("  Error: name cannot be empty.\n");
         } else if (strlen(buf) >= MAX_NAME_LEN) {
@@ -375,12 +409,18 @@ void addEmployee(void)
     for (choice = 0; choice < NUM_DEPARTMENTS; choice++) {
         printf("  %d. %s\n", choice + 1, EMP_DEPARTMENTS[choice]);
     }
-    choice = readInt("Select department: ", 1, NUM_DEPARTMENTS);
-    strcpy(emp.department, EMP_DEPARTMENTS[choice - 1]);
+  choice = readInt("Select department: ", 1, NUM_DEPARTMENTS);
 
-    /* Position */
+if (cancelEmployeeRegistration())
+    return;
+
+strcpy(emp.department, EMP_DEPARTMENTS[choice - 1]);
     for (;;) {
-        readLine("Position / job title: ", buf, sizeof buf);
+       readLine("Position / job title: ", buf, sizeof buf);
+
+if (cancelEmployeeRegistration())
+    return;
+
         if (strlen(buf) == 0) {
             printf("  Error: position cannot be empty.\n");
         } else if (strlen(buf) >= MAX_POSITION_LEN) {
@@ -392,18 +432,34 @@ void addEmployee(void)
         }
     }
 
-    emp.yearsOfService     = readInt("Years of service (0-50): ", 0, 50);
-    emp.basicSalary        = readMoney("Basic salary (N$ per month): ", 0);
-    emp.housingAllowance   = readMoney("Housing allowance (N$): ", 1);
-    emp.transportAllowance = readMoney("Transport allowance (N$): ", 1);
-    emp.otherAllowance     = readMoney("Other allowance (N$): ", 1);
+    emp.yearsOfService = readInt("Years of service (0-50): ", 0, 50);
+if (cancelEmployeeRegistration())
+    return;
 
-    employees[employeeCount] = emp;
-    employeeCount++;
-    printf("\nEmployee %s added successfully. Total employees: %d\n",
-           emp.id, employeeCount);
+emp.basicSalary = readMoney("Basic salary (N$ per month): ", 0);
+if (cancelEmployeeRegistration())
+    return;
+
+emp.housingAllowance = readMoney("Housing allowance (N$): ", 1);
+if (cancelEmployeeRegistration())
+    return;
+
+emp.transportAllowance = readMoney("Transport allowance (N$): ", 1);
+if (cancelEmployeeRegistration())
+    return;
+
+emp.otherAllowance = readMoney("Other allowance (N$): ", 1);
+if (cancelEmployeeRegistration())
+    return;
+
+registrationInput = 0;
+
+employees[employeeCount] = emp;
+employeeCount++;
+
+printf("\nEmployee %s added successfully. Total employees: %d\n",
+       emp.id, employeeCount);
 }
-
 void displayEmployees(void)
 {
     int i;

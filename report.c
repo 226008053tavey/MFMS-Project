@@ -1,176 +1,210 @@
 #include <stdio.h>
-#include <string.h>
-#include "reports.h"
 
-void generateEmployeeReport(struct Employee employees[], int count) {
-    printf("\n========================================\n");
-    printf("            EMPLOYEE REPORT             \n");
-    printf("========================================\n");
+#include "report.h"
+#include "employees.h"
+#include "budget.h"
+#include "suppliers.h"
+#include "assets.h"
+#include "validation.h"
 
-    if (count == 0) {
+/* Display employee information and salary statistics. */
+static void employeeReport(void)
+{
+    int i;
+    const Employee *emp;
+
+    printf("\n========== EMPLOYEE REPORT ==========\n");
+
+    if (getEmployeeCount() == 0) {
         printf("No employee records found.\n");
         return;
     }
 
-    double total_salary = 0.0;
-    double highest_salary = employees[0].basic_salary + employees[0].housing_allowance + employees[0].transport_allowance;
-    double lowest_salary = highest_salary;
+    printf("%-10s %-22s %-20s %-12s\n",
+           "ID", "Name", "Department", "Gross Salary");
 
-    for (int i = 0; i < count; i++) {
-        double gross_salary = employees[i].basic_salary + employees[i].housing_allowance + employees[i].transport_allowance;
-        total_salary += gross_salary;
+    printf("---------------------------------------------------------------------\n");
 
-        if (gross_salary > highest_salary) {
-            highest_salary = gross_salary;
-        }
-        if (gross_salary < lowest_salary) {
-            lowest_salary = gross_salary;
+    for (i = 0; i < getEmployeeCount(); i++) {
+        emp = getEmployeeByIndex(i);
+
+        if (emp != NULL) {
+            printf("%-10s %-22s %-20s N$%-10.2f\n",
+                   emp->id,
+                   emp->name,
+                   emp->department,
+                   calculateGrossSalary(emp));
         }
     }
 
-    double average_salary = total_salary / count;
-
-    printf("Total Employees : %d\n", count);
-    printf("Average Salary  : N$%.2f\n", average_salary);
-    printf("Highest Salary  : N$%.2f\n", highest_salary);
-    printf("Lowest Salary   : N$%.2f\n", lowest_salary);
-    printf("========================================\n");
+    printf("\nTotal Employees : %d\n", getEmployeeCount());
+    printf("Average Salary  : N$%.2f\n", getAverageSalary());
+    printf("Highest Salary  : N$%.2f\n", getHighestSalary());
+    printf("Lowest Salary   : N$%.2f\n", getLowestSalary());
 }
 
-void generateBudgetReport(struct Budget budgets[], int count) {
-    printf("\n========================================\n");
-    printf("             BUDGET REPORT              \n");
-    printf("========================================\n");
+/* Display budget information and totals. */
+static void budgetReport(void)
+{
+    int i;
+    double totalAllocated = 0.0;
+    double totalExpenditure = 0.0;
+    int exceededCount = 0;
 
-    if (count == 0) {
+    printf("\n========== BUDGET REPORT ==========\n");
+
+    if (budgetCount == 0) {
         printf("No budget records found.\n");
         return;
     }
 
-    double total_allocated = 0.0;
-    double total_expenditure = 0.0;
+    printf("%-20s %-16s %-16s %-16s\n",
+           "Department", "Allocated", "Expenditure", "Remaining");
 
-    for (int i = 0; i < count; i++) {
-        total_allocated += budgets[i].allocated;
-        total_expenditure += budgets[i].expenditure;
-    }
+    printf("--------------------------------------------------------------------------\n");
 
-    double total_remaining = total_allocated - total_expenditure;
+    for (i = 0; i < budgetCount; i++) {
+        double remaining;
 
-    printf("Total Allocated Budget : N$%.2f\n", total_allocated);
-    printf("Total Expenditure      : N$%.2f\n", total_expenditure);
-    printf("Total Remaining Budget : N$%.2f\n", total_remaining);
-    
-    printf("\nDepartments Exceeding Allocated Budget:\n");
-    int exceeded_count = 0;
-    for (int i = 0; i < count; i++) {
-        if (budgets[i].expenditure > budgets[i].allocated) {
-            double deficit = budgets[i].expenditure - budgets[i].allocated;
-            printf("- %s (Over budget by N$%.2f)\n", budgets[i].department, deficit);
-            exceeded_count++;
+        totalAllocated += budgets[i].allocatedBudget;
+        totalExpenditure += budgets[i].expenditure;
+
+        remaining = budgets[i].allocatedBudget - budgets[i].expenditure;
+
+        printf("%-20s N$%-13.2f N$%-13.2f N$%-13.2f\n",
+               budgets[i].department,
+               budgets[i].allocatedBudget,
+               budgets[i].expenditure,
+               remaining);
+
+        if (budgets[i].expenditure > budgets[i].allocatedBudget) {
+            exceededCount++;
         }
     }
 
-    if (exceeded_count == 0) {
-        printf("None. All departments are within budget.\n");
-    }
-    printf("========================================\n");
+    printf("\nTotal Allocated    : N$%.2f\n", totalAllocated);
+    printf("Total Expenditure  : N$%.2f\n", totalExpenditure);
+    printf("Total Remaining    : N$%.2f\n",
+           totalAllocated - totalExpenditure);
+
+    printf("Departments Over Budget: %d\n", exceededCount);
 }
 
-void generateSupplierReport(struct Supplier suppliers[], int count) {
-    printf("\n========================================================================================\n");
-    printf("                                    SUPPLIER REPORT                                     \n");
-    printf("========================================================================================\n");
+/* Display all registered suppliers. */
+static void supplierReport(void)
+{
+    int i;
 
-    if (count == 0) {
+    printf("\n========== SUPPLIER REPORT ==========\n");
+
+    if (supplierCount == 0) {
         printf("No supplier records found.\n");
         return;
     }
 
-    printf("%-10s %-20s %-25s %-15s %-15s\n", "ID", "Name", "Email", "Phone", "Location");
+    printf("%-8s %-20s %-25s %-18s %-18s\n",
+           "ID", "Name", "Email", "Phone", "Town");
+
     printf("----------------------------------------------------------------------------------------\n");
 
-    for (int i = 0; i < count; i++) {
-        printf("%-10d %-20s %-25s %-15s %-15s\n", 
-               suppliers[i].id, 
-               suppliers[i].name, 
-               suppliers[i].email, 
-               suppliers[i].phone, 
-               suppliers[i].location);
+    for (i = 0; i < supplierCount; i++) {
+        printf("%-8d %-20s %-25s %-18s %-18s\n",
+               supplierIDs[i],
+               supplierNames[i],
+               supplierEmails[i],
+               supplierPhones[i],
+               supplierTowns[i]);
     }
-    printf("========================================================================================\n");
+
+    printf("\nTotal Suppliers: %d\n", supplierCount);
 }
 
-void generateAssetReport(struct Asset assets[], int count) {
-    printf("\n========================================================================================\n");
-    printf("                                      ASSET REPORT                                      \n");
-    printf("========================================================================================\n");
+/* Display all registered assets. */
+static void assetReport(void)
+{
+    int i;
 
-    if (count == 0) {
+    printf("\n========== ASSET REPORT ==========\n");
+
+    if (assetCount == 0) {
         printf("No asset records found.\n");
         return;
     }
 
-    printf("%-10s %-20s %-15s %-15s %-15s %-10s\n", "ID", "Name", "Type", "Value (N$)", "Department", "Condition");
+    printf("%-8s %-18s %-15s %-14s %-18s %-15s\n",
+           "ID", "Name", "Type", "Value (N$)",
+           "Department", "Condition");
+
     printf("----------------------------------------------------------------------------------------\n");
 
-    for (int i = 0; i < count; i++) {
-        printf("%-10d %-20s %-15s %-15.2f %-15s %-10s\n", 
-               assets[i].id, 
-               assets[i].name, 
-               assets[i].type, 
-               assets[i].purchase_value, 
-               assets[i].department, 
+    for (i = 0; i < assetCount; i++) {
+        printf("%-8d %-18s %-15s %-14.2f %-18s %-15s\n",
+               assets[i].id,
+               assets[i].name,
+               assets[i].type,
+               assets[i].purchaseValue,
+               assets[i].department,
                assets[i].condition);
     }
-    printf("========================================================================================\n");
+
+    printf("\nTotal Assets: %d\n", assetCount);
 }
 
-void displayReportsMenu(struct Employee employees[], int emp_count, 
-                        struct Budget budgets[], int budget_count, 
-                        struct Supplier suppliers[], int sup_count, 
-                        struct Asset assets[], int asset_count) {
+/* Reports menu called from the main MFMS menu. */
+void displayReports(void)
+{
     int choice;
+
     do {
-        printf("\n=== REPORTS MODULE ===\n");
+        printf("\n========================================\n");
+        printf("             REPORTS MODULE\n");
+        printf("========================================\n");
         printf("1. Employee Report\n");
         printf("2. Budget Report\n");
         printf("3. Supplier Report\n");
         printf("4. Asset Report\n");
         printf("5. Display All Reports\n");
         printf("6. Return to Main Menu\n");
-        printf("Enter choice: ");
-        
-        if (scanf("%d", &choice) != 1) {
-            while (getchar() != '\n');
-            printf("Invalid input. Please enter a number.\n");
-            continue;
-        }
+
+        choice = getValidMenuChoice(1, 6);
 
         switch (choice) {
             case 1:
-                generateEmployeeReport(employees, emp_count);
+                employeeReport();
                 break;
+
             case 2:
-                generateBudgetReport(budgets, budget_count);
+                budgetReport();
                 break;
+
             case 3:
-                generateSupplierReport(suppliers, sup_count);
+                supplierReport();
                 break;
+
             case 4:
-                generateAssetReport(assets, asset_count);
+                assetReport();
                 break;
+
             case 5:
-                generateEmployeeReport(employees, emp_count);
-                generateBudgetReport(budgets, budget_count);
-                generateSupplierReport(suppliers, sup_count);
-                generateAssetReport(assets, asset_count);
-                break;
+           if (getEmployeeCount() == 0 &&
+        budgetCount == 0 &&
+        supplierCount == 0 &&
+        assetCount == 0)
+    {
+        printf("\nNo reports found. No records are available in the system.\n");
+    }
+    else
+    {
+        employeeReport();
+        budgetReport();
+        supplierReport();
+        assetReport();
+    }
+    break;
             case 6:
                 printf("Returning to main menu...\n");
                 break;
-            default:
-                printf("Invalid selection. Try again.\n");
         }
+
     } while (choice != 6);
 }
